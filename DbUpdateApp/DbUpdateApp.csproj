@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultImpl\MultipleFileService.cs" />
+    <Compile Include="DefaultImpl\DefaultDatabaseVersion.cs" />
     <Compile Include="Interfaces\IscriptService.cs" />
     <Compile Include="Interfaces\IFilesService.cs" />
     <Compile Include="Interfaces\IDatabaseScriptManager.cs" />

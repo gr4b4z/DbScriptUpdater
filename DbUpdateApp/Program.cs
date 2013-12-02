@@ -73,16 +73,11 @@ namespace DbUpdateApp
                     Dir = ConfigurationManager.AppSettings["Path"],
                 };
 
-                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
+                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings.Cast<ConnectionStringSettings>().Where(cs => cs.Name.StartsWith("Update_")))
                 {
-                    if (cs.Name.StartsWith("Update_"))
-                    {
-                        a.Cs = cs.ConnectionString;
-                        RunScriptMode(a);    
-                    }
-                    
+                    a.Cs = cs.ConnectionString;
+                    RunScriptMode(a);
                 }
-
             }
         }
     }
