@@ -4,11 +4,11 @@ using Microsoft.SqlServer.Management.Smo;
 
 namespace DbUpdateApp
 {
-    public class SqlScriptManager:ISqlScriptManager
+    public class SqlDatabaseScriptManager:IDatabaseScriptManager
     {
         readonly SqlConnection _con1;
         readonly Server _server;
-        public SqlScriptManager(string connectionString)
+        public SqlDatabaseScriptManager(string connectionString)
         {
             _con1 = new SqlConnection(connectionString);
             _server = new Server(new ServerConnection(_con1));

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DbUpdateApp.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -8,12 +9,12 @@ namespace DbUpdateApp.Test
     [TestFixture]
     public class UpdateManagerTest
     {
-        private IOrderedEnumerable<ScriptFile> orderedScriptFiles;
-        private IList<string> filesList;
+        private IOrderedEnumerable<ScriptVersion> _orderedScriptFiles;
+        private IList<string> _filesList;
         [SetUp] 
         public void InitTest()
         {
-            filesList = new[]
+            _filesList = new[]
             {
                 "1.firstScript.sql",
                 "2.updatedModel.sql",
@@ -28,22 +29,22 @@ namespace DbUpdateApp.Test
                 "3.added stored proc.sql",
                 "4.procedure uptaed.sql",
             };
-            orderedScriptFiles = filesList.Select(s => new ScriptFile(s)).OrderBy(e => e);
+            _orderedScriptFiles = _filesList.Select(s => new ScriptVersion(s)).OrderBy(e => e);
         }
         [Test]
         public void should_read_all_files()
         {
             var readed = new List<string>();
-            var scriptBase = Substitute.For<IScriptBase>();
-            scriptBase.GetOrderedFiles().Returns(orderedScriptFiles);
-            scriptBase.GetContent(Arg.Any<ScriptFile>()).Returns("").AndDoes(e =>
-                readed.Add(((ScriptFile)e.Args()[0]).Name)
+            var scriptBase = Substitute.For<IScriptService>();
+            scriptBase.GetOrderedFiles().Returns(_orderedScriptFiles);
+            scriptBase.GetContent(Arg.Any<ScriptVersion>()).Returns("").AndDoes(e =>
+                readed.Add(((ScriptVersion)e.Args()[0]).Name)
                 );
 
-            var scriptMngr = Substitute.For<ISqlScriptManager>();
+            var scriptMngr = Substitute.For<IDatabaseScriptManager>();
             scriptMngr.RunScript(Arg.Any<string>());
 
-            var version = Substitute.For<IVersion>();
+            var version = Substitute.For<IDatabaseVersion>();
             version.GetVersion().Returns("0");
             var um = new UpdateManager(version, scriptBase, scriptMngr);
 
@@ -51,7 +52,7 @@ namespace DbUpdateApp.Test
 
             um.Update();
 
-            Assert.That(filesList, Is.EquivalentTo(readed));
+            Assert.That(_filesList, Is.EquivalentTo(readed));
 
         }
 
@@ -60,14 +61,14 @@ namespace DbUpdateApp.Test
         public void should_read_last_5()
         {
             var readed = new List<string>();
-            var scriptBase = Substitute.For<IScriptBase>();
-            scriptBase.GetOrderedFiles().Returns(orderedScriptFiles);
-            scriptBase.GetContent(Arg.Any<ScriptFile>()).Returns("").AndDoes(e => readed.Add(((ScriptFile)e.Args()[0]).Name));
+            var scriptBase = Substitute.For<IScriptService>();
+            scriptBase.GetOrderedFiles().Returns(_orderedScriptFiles);
+            scriptBase.GetContent(Arg.Any<ScriptVersion>()).Returns("").AndDoes(e => readed.Add(((ScriptVersion)e.Args()[0]).Name));
 
-            var scriptMngr = Substitute.For<ISqlScriptManager>();
+            var scriptMngr = Substitute.For<IDatabaseScriptManager>();
             scriptMngr.RunScript(Arg.Any<string>());
 
-            var version = Substitute.For<IVersion>();
+            var version = Substitute.For<IDatabaseVersion>();
             version.GetVersion().Returns("2.1.3.2.changedViewModel.sql");
 
             var um = new UpdateManager(version, scriptBase, scriptMngr);
@@ -76,7 +77,7 @@ namespace DbUpdateApp.Test
 
             um.Update();
 
-            Assert.That(filesList.Skip(7), Is.EquivalentTo(readed));
+            Assert.That(_filesList.Skip(7), Is.EquivalentTo(readed));
             Assert.That(5, Is.EqualTo(readed.Count));
 
         }
@@ -86,14 +87,14 @@ namespace DbUpdateApp.Test
         {
             var readed = new List<string>();
             var saved = new List<string>();
-            var scriptBase = Substitute.For<IScriptBase>();
-            scriptBase.GetOrderedFiles().Returns(orderedScriptFiles);
-            scriptBase.GetContent(Arg.Any<ScriptFile>()).Returns("").AndDoes(e => readed.Add(((ScriptFile)e.Args()[0]).Name));
+            var scriptBase = Substitute.For<IScriptService>();
+            scriptBase.GetOrderedFiles().Returns(_orderedScriptFiles);
+            scriptBase.GetContent(Arg.Any<ScriptVersion>()).Returns("").AndDoes(e => readed.Add(((ScriptVersion)e.Args()[0]).Name));
 
-            var scriptMngr = Substitute.For<ISqlScriptManager>();
+            var scriptMngr = Substitute.For<IDatabaseScriptManager>();
             scriptMngr.RunScript(Arg.Any<string>());
 
-            var version = Substitute.For<IVersion>();
+            var version = Substitute.For<IDatabaseVersion>();
             version.GetVersion().Returns("2.1.3.changedViewModel.sql");
             version.SaveVersion(Arg.Do<string>(saved.Add));
 
@@ -114,14 +115,14 @@ namespace DbUpdateApp.Test
         {
             var readed = new List<string>();
             var saved = new List<string>();
-            var scriptBase = Substitute.For<IScriptBase>();
-            scriptBase.GetOrderedFiles().Returns(orderedScriptFiles);
-            scriptBase.GetContent(Arg.Any<ScriptFile>()).Returns("").AndDoes(e => readed.Add(((ScriptFile)e.Args()[0]).Name));
+            var scriptBase = Substitute.For<IScriptService>();
+            scriptBase.GetOrderedFiles().Returns(_orderedScriptFiles);
+            scriptBase.GetContent(Arg.Any<ScriptVersion>()).Returns("").AndDoes(e => readed.Add(((ScriptVersion)e.Args()[0]).Name));
 
-            var scriptMngr = Substitute.For<ISqlScriptManager>();
+            var scriptMngr = Substitute.For<IDatabaseScriptManager>();
             scriptMngr.RunScript(Arg.Any<string>());
 
-            var version = Substitute.For<IVersion>();
+            var version = Substitute.For<IDatabaseVersion>();
             version.GetVersion().Returns("0");
             version.SaveVersion(Arg.Do<string>(saved.Add));
 
@@ -139,21 +140,21 @@ namespace DbUpdateApp.Test
         [Test]
         public void should_save_last_correct_version_and_stop_updating_when_exception_occurs()
         {
-            var scriptBase = Substitute.For<IScriptBase>();
-            scriptBase.GetOrderedFiles().Returns(orderedScriptFiles);
-            scriptBase.GetContent(Arg.Any<ScriptFile>()).Returns(
+            var scriptBase = Substitute.For<IScriptService>();
+            scriptBase.GetOrderedFiles().Returns(_orderedScriptFiles);
+            scriptBase.GetContent(Arg.Any<ScriptVersion>()).Returns(
                         info =>
                         {
-                            if (((ScriptFile)info.Args()[0]).Name == "2.1.3.fixBug134Model.sql")
-                                throw new ScriptFileException(((ScriptFile)info.Args()[0]));
+                            if (((ScriptVersion)info.Args()[0]).Name == "2.1.3.fixBug134Model.sql")
+                                throw new ScriptFileException(((ScriptVersion)info.Args()[0]));
                             return "";
                         }
                 );
 
-            var scriptMngr = Substitute.For<ISqlScriptManager>();
+            var scriptMngr = Substitute.For<IDatabaseScriptManager>();
             scriptMngr.RunScript(Arg.Any<string>());
 
-            var version = Substitute.For<IVersion>();
+            var version = Substitute.For<IDatabaseVersion>();
             version.GetVersion().Returns("0");
             string lastVersion = null;
             version.SaveVersion(Arg.Do<string>(e => lastVersion = e));

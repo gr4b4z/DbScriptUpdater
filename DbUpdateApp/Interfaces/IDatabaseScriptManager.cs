@@ -2,7 +2,7 @@
 
 namespace DbUpdateApp
 {
-    public interface ISqlScriptManager:IDisposable
+    public interface IDatabaseScriptManager:IDisposable
     {
         void RunScript(string p);
     }

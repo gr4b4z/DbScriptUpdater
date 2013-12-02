@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Linq;
+using DbUpdateApp.Interfaces;
 
 namespace DbUpdateApp
 {
     public class UpdateManager:IDisposable
     {
-        private readonly IVersion _dbVersion;
-        private readonly IScriptBase _scriptBase;
-        private readonly ISqlScriptManager _scriptManager;
+        private readonly IDatabaseVersion _dbDatabaseVersion;
+        private readonly IScriptService _iscriptService;
+        private readonly IDatabaseScriptManager _scriptManager;
 
-        public UpdateManager(IVersion dbVersion,IScriptBase scriptBase,ISqlScriptManager scriptManager)
+        public UpdateManager(IDatabaseVersion dbDatabaseVersion,IScriptService iscriptService,IDatabaseScriptManager scriptManager)
         {
-            _dbVersion = dbVersion;
-            _scriptBase = scriptBase;
+            _dbDatabaseVersion = dbDatabaseVersion;
+            _iscriptService = iscriptService;
             _scriptManager = scriptManager;
         }
 
@@ -20,28 +21,28 @@ namespace DbUpdateApp
         {
             UpdateToSpecifiedVersion();
         }
-        private void UpdateToSpecifiedVersion(ScriptFile endOn = null)
+        private void UpdateToSpecifiedVersion(ScriptVersion endOn = null)
         {
-            var startFrom = _dbVersion.GetVersion();
-            var s = new ScriptFile(startFrom);
-            var files = _scriptBase.GetOrderedFiles().Where(e => e.CompareTo(s) >= 0);
+            var startFrom = _dbDatabaseVersion.GetVersion();
+            var s = new ScriptVersion(startFrom);
+            var files = _iscriptService.GetOrderedFiles().Where(e => e.CompareTo(s) >= 0);
             if (endOn != null) files = files.Where(r => r.CompareTo(endOn) <= 0);
             try
             {
                 foreach (var scriptFile in files)
                 {
-                    _scriptManager.RunScript(_scriptBase.GetContent(scriptFile));
-                    _dbVersion.SaveVersion(scriptFile.Name);
+                    _scriptManager.RunScript(_iscriptService.GetContent(scriptFile));
+                    _dbDatabaseVersion.SaveVersion(scriptFile.Name);
                 }
             }
             catch (ScriptFileException exc)
             {
-                Console.WriteLine("There was problem with file");
+                Console.WriteLine("There was problem with file "+exc.Message);
             }
         }
         public void UpdateToVersion(string version)
         {
-            var sf = new ScriptFile(version);
+            var sf = new ScriptVersion(version);
             UpdateToSpecifiedVersion(sf);
         }
 

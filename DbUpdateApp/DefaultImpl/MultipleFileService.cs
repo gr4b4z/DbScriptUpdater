@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DbUpdateApp.Interfaces;
 
 namespace DbUpdateApp
 {
-    public class FilesImplementation : IFiles
+    public class MultipleFileService : IFilesService
     {
         private readonly string _baseDir;
 
-        public FilesImplementation(string baseDir)
+        public MultipleFileService(string baseDir)
         {
             _baseDir = baseDir;
         }
@@ -16,7 +17,8 @@ namespace DbUpdateApp
         private IDictionary<string,string> _files;
         private IDictionary<string, string> ReadFiles()
         {
-            var files = new DirectoryInfo(_baseDir).EnumerateFiles("*.sql", SearchOption.AllDirectories)
+            var files = new DirectoryInfo(_baseDir)
+                .EnumerateFiles("*.sql", SearchOption.AllDirectories)
                 .ToDictionary(k => k.Name, v => v.FullName);
             if (!files.Any()) throw new NoSqlFilesException();
             return files;
