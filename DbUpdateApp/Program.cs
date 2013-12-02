@@ -72,10 +72,15 @@ namespace DbUpdateApp
                 {
                     Dir = ConfigurationManager.AppSettings["Path"],
                 };
-                foreach (ConnectionStringSettingsCollection cs in ConfigurationManager.ConnectionStrings)
+
+                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
                 {
-                    a.Cs = cs.ToString();
-                    RunScriptMode(a);
+                    if (cs.Name.StartsWith("Update_"))
+                    {
+                        a.Cs = cs.ConnectionString;
+                        RunScriptMode(a);    
+                    }
+                    
                 }
 
             }
