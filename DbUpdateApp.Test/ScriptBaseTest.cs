@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace DbUpdateApp.Test
 {
     [TestFixture]
-    public class SscriptBaseTest
+    public class ScriptBaseTest
     {
         private IList<string> randomiezedFilesList;
         private IList<string> filesList;
@@ -65,16 +65,16 @@ namespace DbUpdateApp.Test
 
             var files = Substitute.For<IFiles>();
             files.Files.Returns(new[] { "file1.sql", "file2.sql" });
-            files.ReadContent(Arg.Any<string>()).Returns(s =>
-                s[0] + "Content"
-                );
+
+            files.ReadContent(Arg.Any<string>()).Returns(s =>s[0] + "Content");
 
             var script = new ScriptBase(files);
             var i = script.GetOrderedFiles().ToList();
 
 
-            var f1 = i.FirstOrDefault(r => r.Name == "file1.sql").Content;
-            var f2 = i.FirstOrDefault(r => r.Name == "file2.sql").Content;
+            var f1 = script.GetContent(new ScriptFile("file1.sql"));
+            var f2 = script.GetContent(new ScriptFile("file2.sql"));
+            
 
             Assert.AreEqual("file1.sqlContent", f1);
             Assert.AreEqual("file2.sqlContent", f2);
@@ -82,29 +82,29 @@ namespace DbUpdateApp.Test
         }
 
 
-        [Test]
-        public void Content_is_lazy_loaded()
-        {
+        //[Test]
+        //public void Content_is_lazy_loaded()
+        //{
 
-            var files = Substitute.For<IFiles>();
-            files.Files.Returns(new[] { "file1.sql", "file2.sql" });
-            int l = 0;
+        //    var files = Substitute.For<IFiles>();
+        //    files.Files.Returns(new[] { "file1.sql", "file2.sql" });
+        //    int l = 0;
 
-            files.ReadContent(Arg.Any<string>()).Returns(s =>
-                s[0] + "Content").AndDoes(info =>l++ );
+        //    files.ReadContent(Arg.Any<string>()).Returns(s =>
+        //        s[0] + "Content").AndDoes(info =>l++ );
 
-            var script = new ScriptBase(files);
-            var i = script.GetOrderedFiles();
+        //    var script = new ScriptBase(files);
+        //    var i = script.GetOrderedFiles();
 
-            var f1 = i.First();
-            var valueAfter1 = l;
-            var f2 = i.ToList();
-            var valueAfter2 = l;
+        //    var f1 = i.First();
+        //    var valueAfter1 = l;
+        //    var f2 = i.ToList();
+        //    var valueAfter2 = l;
             
-            Assert.AreEqual(1,valueAfter1);
-            Assert.AreEqual(3,valueAfter2);
+        //    Assert.AreEqual(1,valueAfter1);
+        //    Assert.AreEqual(3,valueAfter2);
 
-        }
+        //}
 
 
 

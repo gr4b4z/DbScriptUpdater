@@ -70,7 +70,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomList.cs" />
-    <Compile Include="SscriptBaseTest.cs" />
+    <Compile Include="UpdateManagerTest.cs" />
+    <Compile Include="ScriptBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

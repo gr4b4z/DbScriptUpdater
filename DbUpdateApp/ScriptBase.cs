@@ -15,18 +15,18 @@ namespace DbUpdateApp
         }
 
 
-        public IEnumerable<ScriptFile> GetOrderedFiles(string startForm)
+        public IOrderedEnumerable<ScriptFile> GetOrderedFiles()
         {
             var listOfFiles =  files.Files.ToList().Select(r=>new ScriptFile(r)).ToList();
-            listOfFiles.Sort((i1, i2) => i1.CompareTo(i2));
-            return listOfFiles.Select(r => r);
+            //listOfFiles.Sort((i1, i2) => i1.CompareTo(i2));
+            var ordered =  listOfFiles.AsEnumerable().OrderBy(e => e);
+            return ordered;
         }
 
         public string GetContent(ScriptFile file)
         {
             return files.ReadContent(file.Name);
         }
-
 
       
     }
