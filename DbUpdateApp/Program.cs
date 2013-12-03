@@ -37,9 +37,9 @@ namespace DbUpdateApp
 
         static void RunScriptMode(Args args)
         {
-            var version = new CCrp7Version(args.Cs);
-            var scriptBase = new ScriptBase(new FilesImplementation(args.Dir));
-            var scriptMngr = new SqlScriptManager(args.Cs);
+            var version = new DefaultDatabaseVersion(args.Cs);
+            var scriptBase = new ScriptService(new MultipleFileService(args.Dir));
+            var scriptMngr = new SqlDatabaseScriptManager(args.Cs);
             var u = new UpdateManager(version, scriptBase, scriptMngr);
             if(args.MaxVersion!=null) 
                 u.UpdateToVersion(args.MaxVersion);
@@ -73,16 +73,11 @@ namespace DbUpdateApp
                     Dir = ConfigurationManager.AppSettings["Path"],
                 };
 
-                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
+                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings.Cast<ConnectionStringSettings>().Where(cs => cs.Name.StartsWith("Update_")))
                 {
-                    if (cs.Name.StartsWith("Update_"))
-                    {
-                        a.Cs = cs.ConnectionString;
-                        RunScriptMode(a);    
-                    }
-                    
+                    a.Cs = cs.ConnectionString;
+                    RunScriptMode(a);
                 }
-
             }
         }
     }

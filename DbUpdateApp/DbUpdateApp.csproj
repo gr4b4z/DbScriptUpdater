@@ -64,18 +64,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FilesImplementation.cs" />
-    <Compile Include="IScriptBase.cs" />
-    <Compile Include="IFiles.cs" />
-    <Compile Include="ISqlScriptManager.cs" />
-    <Compile Include="IVersion.cs" />
-    <Compile Include="NoSqlFilesException.cs" />
+    <Compile Include="DefaultImpl\MultipleFileService.cs" />
+    <Compile Include="DefaultImpl\DefaultDatabaseVersion.cs" />
+    <Compile Include="Interfaces\IscriptService.cs" />
+    <Compile Include="Interfaces\IFilesService.cs" />
+    <Compile Include="Interfaces\IDatabaseScriptManager.cs" />
+    <Compile Include="Interfaces\IDatabaseVersion.cs" />
+    <Compile Include="Interfaces\NoSqlFilesException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptBase.cs" />
-    <Compile Include="ScriptFile.cs" />
-    <Compile Include="ScriptFileException.cs" />
-    <Compile Include="SqlScriptManager.cs" />
+    <Compile Include="DefaultImpl\ScriptService.cs" />
+    <Compile Include="DefaultImpl\ScriptVersion.cs" />
+    <Compile Include="Interfaces\ScriptFileException.cs" />
+    <Compile Include="DefaultImpl\DatabaseScriptManager.cs" />
     <Compile Include="UpdateManager.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace DbUpdateApp
+namespace DbUpdateApp.Interfaces
 {
-    public interface IFiles
+    public interface IFilesService
     {
         IEnumerable<string> Files { get; }
         string  ReadContent(string file);

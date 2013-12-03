@@ -8,7 +8,7 @@ namespace DbUpdateApp
 {
     public class ScriptFileException:Exception
     {
-        public ScriptFileException(ScriptFile sf):base(sf.Name)
+        public ScriptFileException(ScriptVersion sf):base(sf.Name)
         {
             
         }
