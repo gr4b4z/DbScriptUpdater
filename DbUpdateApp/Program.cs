@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Configuration;
 using System.Linq;
+using DbUpdateApp.FileService;
+using DbUpdateApp.Interfaces;
+using Ionic.Zip;
 
 namespace DbUpdateApp
 {
@@ -38,7 +41,14 @@ namespace DbUpdateApp
         static void RunScriptMode(Args args)
         {
             var version = new DefaultDatabaseVersion(args.Cs);
-            var scriptBase = new ScriptService(new MultipleFileService(args.Dir));
+
+            //TODO: fileFactory
+            IFilesService fileService;
+            if(args.Dir.EndsWith(".zip"))
+                fileService =  new ZipMultipleFileService(args.Dir);
+            else fileService =  new MultipleFileService(args.Dir);
+
+            var scriptBase = new ScriptService(fileService);
             var scriptMngr = new SqlDatabaseScriptManager(args.Cs);
             var u = new UpdateManager(version, scriptBase, scriptMngr);
             if(args.MaxVersion!=null) 
@@ -53,6 +63,7 @@ namespace DbUpdateApp
         }
         static void Main(string[] args)
         {
+
             if (args.Length > 0)
             {
                 var a = MapArgs(args);

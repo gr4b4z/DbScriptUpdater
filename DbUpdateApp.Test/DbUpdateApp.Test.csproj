@@ -76,10 +76,17 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultDatabaseVersionTest.cs" />
+    <Compile Include="ZipMultipleFileService.cs" />
     <Compile Include="UpdateManagerTest.cs" />
     <Compile Include="ScriptBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\flat_structure.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\tree_structure.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

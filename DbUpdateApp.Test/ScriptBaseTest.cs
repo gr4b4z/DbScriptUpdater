@@ -7,14 +7,14 @@ using NUnit.Framework;
 namespace DbUpdateApp.Test
 {
     [TestFixture]
-    public class ScriptBaseTest
+    public partial class ScriptBaseTest
     {
-        private IList<string> randomiezedFilesList;
-        private IList<string> filesList;
+        private IList<string> _randomiezedFilesList;
+        private IList<string> _filesList;
         [SetUp] 
         public void InitTest()
         {
-            filesList = new[]
+            _filesList = new[]
             {
             
             
@@ -31,7 +31,7 @@ namespace DbUpdateApp.Test
                 "3.added stored proc.sql",
                 "4.procedure uptaed.sql",
             };
-            randomiezedFilesList= new[]
+            _randomiezedFilesList= new[]
             {
                 "2.1.1.fixBug134Model.sql",
                 "4.procedure uptaed.sql",
@@ -53,12 +53,12 @@ namespace DbUpdateApp.Test
         {
 
             var files = Substitute.For<IFilesService>();
-            files.Files.Returns(randomiezedFilesList);
+            files.Files.Returns(_randomiezedFilesList);
 
             var script = new ScriptService(files);
             var names = script.GetOrderedFiles().Select(r => r.Name).ToList();
-            for (int v = filesList.Count() - 1; v >= 0; v--)
-                Assert.AreSame(filesList[v], names[v]);
+            for (int v = _filesList.Count() - 1; v >= 0; v--)
+                Assert.AreSame(_filesList[v], names[v]);
         }
         [Test]
         public void Can_read_content()

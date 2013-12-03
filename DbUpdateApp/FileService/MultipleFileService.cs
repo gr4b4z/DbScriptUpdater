@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using DbUpdateApp.Interfaces;
 
-namespace DbUpdateApp
+namespace DbUpdateApp.FileService
 {
     public class MultipleFileService : IFilesService
     {
