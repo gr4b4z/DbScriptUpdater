@@ -24,6 +24,7 @@ namespace DbUpdateApp
         private void UpdateToSpecifiedVersion(ScriptVersion endOn = null)
         {
             var startFrom = _dbDatabaseVersion.GetVersion();
+            Console.WriteLine("Database is in version: "+startFrom);
             var s = new ScriptVersion(startFrom);
             var files = _iscriptService.GetOrderedFiles().Where(e => e.CompareTo(s) >= 0);
             if (endOn != null) files = files.Where(r => r.CompareTo(endOn) <= 0);
@@ -31,8 +32,12 @@ namespace DbUpdateApp
             {
                 foreach (var scriptFile in files)
                 {
+                    Console.WriteLine("Starting updating to version : " + scriptFile.Name);
+                    
                     _scriptManager.RunScript(_iscriptService.GetContent(scriptFile));
                     _dbDatabaseVersion.SaveVersion(scriptFile.Name);
+                    
+                    Console.WriteLine("Db updated to version : " + scriptFile.Name);
                 }
             }
             catch (ScriptFileException exc)
