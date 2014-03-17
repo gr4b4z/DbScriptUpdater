@@ -82,6 +82,7 @@
     <Compile Include="Interfaces\ScriptFileException.cs" />
     <Compile Include="DefaultImpl\DatabaseScriptManager.cs" />
     <Compile Include="UpdateManager.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
