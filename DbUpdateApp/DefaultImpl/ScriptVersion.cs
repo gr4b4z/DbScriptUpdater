@@ -5,7 +5,14 @@ namespace DbUpdateApp
 {
     public class ScriptVersion:IComparable
     {
-        public ScriptVersion(string file)
+        public static int[] NewVersionNumber(int[] old)
+        {
+            var nv = new int[old.Length];
+            Array.Copy(old, nv, old.Length);
+            nv[nv.Length - 1]++;
+            return nv;
+        }
+   public ScriptVersion(string file)
         {
             this.Name = file;
             CreateVersion();
@@ -24,7 +31,7 @@ namespace DbUpdateApp
         }
         public string Name { get; set; }
         private readonly int[] _version= new int[4];
-        private int[] Version { get { return _version; } }
+        public int[] Version { get { return _version; } }
 
         public int CompareTo(object obj)
         {
