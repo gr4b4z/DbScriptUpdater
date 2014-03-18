@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using DbUpdateApp.FileService;
 using DbUpdateApp.Interfaces;
@@ -24,114 +26,65 @@ namespace DbUpdateApp
         public string MaxVersion;
     }
 
-    public class AppStartParameters
-    {
-        public RunParameters SettingsFileParameters()
-        {
-            return new RunParameters
-            {
-                Dir = ConfigurationManager.AppSettings["Path"],
-                Cs = ConfigurationManager.ConnectionStrings.Cast<ConnectionStringSettings>()
-                    .Where(cs => cs.Name.StartsWith("Update_")).Select(c => c.ConnectionString).ToArray(),
-            };
-        }
-        public RunParameters ComandLineParameters(string[] args)
-        {
-            var arg = new RunParameters();
-            for (int a = 0; a < args.Length; a++)
-            {
-                switch (args[a])
-                {
-                    case "-cs":
-                        arg.Cs = args[++a];
-                        break;
-                    case "-path":
-                        arg.Dir = args[++a];
-                        break;
-                    case "-max":
-                        arg.MaxVersion = args[++a];
-                        break;
-                }
-            }
-            return arg;
-        }
-    }
     class Program
     {
 
-        static void RunScriptMode(string dirOrFile,string connectionString,string maxViersion)
+
+        private static void AddFiles(IEnumerable<string> filenames)
         {
-            var version = new DefaultDatabaseVersion(connectionString);
 
-            //TODO: fileFactory
-            IFilesService fileService;
-            if (dirOrFile.EndsWith(".zip"))
-                fileService = new ZipMultipleFileService(dirOrFile);
-            else fileService = new MultipleFileService(dirOrFile);
+            var sqlFilesLocation = Directory.Exists(ConfigurationManager.AppSettings["Path"]) ? ConfigurationManager.AppSettings["Path"] : Util.AssemblyDirectory;
 
-            var scriptBase = new ScriptService(fileService);
-            var scriptMngr = new SqlDatabaseScriptManager(connectionString);
-            var u = new UpdateManager(version, scriptBase, scriptMngr);
-            if (maxViersion != null)
-                u.UpdateToVersion(maxViersion);
-            else 
-                u.Update();
-        }
-
-
-
-
-        private static void AddFiles(string[] filenames, RunParameters runParameters)
-        {
-            var sqlFilesLocation = ConfigurationManager.AppSettings["Path"] ?? Util.AssemblyDirectory;
             IFilesService fileService = new MultipleFileService(sqlFilesLocation);
-            var lastVersion = new ScriptService(fileService).GetOrderedFiles().Last().Version;
-
+            var lastVersion = new[] { 0 };
+            if (fileService.Files.Any())
+                lastVersion = new ScriptService(fileService).GetOrderedFiles().Last().Version;
 
             foreach (var fn in filenames)
             {
+                var fileName = Path.GetFileName(fn);
                 lastVersion = ScriptVersion.NewVersionNumber(lastVersion);
-                var prefix = string.Join(".", lastVersion)+".";
-                if (fn.StartsWith("d%"))
+                var prefix = string.Join(".", lastVersion).TrimEnd(new[] { '0', '.' }) + ".";
+                if (fileName.StartsWith("d%"))
                 {
-                    prefix = prefix + DateTime.Now.ToString("yyyyMMdd") + "." + fn.Substring(2);
+                    prefix = prefix + "d" + DateTime.Now.ToString("yyyyMMdd") + "." + fileName.Substring(2);
                 }
                 else
                 {
-                    prefix = prefix + fn;
+                    prefix = prefix + fileName;
                 }
+                File.Copy(fn, sqlFilesLocation + "/" + prefix);
             }
-
-
-
         }
 
 
-        public static StartMode StartMode =StartMode.UpdateDb;
+        public static StartMode StartMode = StartMode.UpdateDb;
         public static ConfigLocation ConfigLocation = ConfigLocation.None;
         static void Main(string[] args)
         {
             RunParameters runParameters;
 
             if (args.Length > 0 && args.All(f => f.EndsWith(".sql")))
+            {
+                StartMode = StartMode.AddFile;
+                ConfigLocation = ConfigLocation.File;
+                runParameters = new AppStartParameters().SettingsFileParameters();
+            }
+            else
+            {
+                if (args.Length > 0)
                 {
-                    StartMode = StartMode.AddFile;
-                    ConfigLocation = ConfigLocation.File;
-                    runParameters = new AppStartParameters().SettingsFileParameters();    
-                }
-            else {
-                if(args.Length>0)
-                {
-                    runParameters = new AppStartParameters().ComandLineParameters(args);    
+                    runParameters = new AppStartParameters().ComandLineParameters(args);
                     StartMode = StartMode.UpdateDb;
                     ConfigLocation = ConfigLocation.File;
                 }
-            else
+                else
                 {
                     runParameters = new AppStartParameters().SettingsFileParameters();
-                StartMode = StartMode.UpdateDb;
-                ConfigLocation = ConfigLocation.Args;
-            }}
+                    StartMode = StartMode.UpdateDb;
+                    ConfigLocation = ConfigLocation.Args;
+                }
+            }
 
 
 
@@ -139,13 +92,12 @@ namespace DbUpdateApp
 
             if (StartMode == StartMode.AddFile)
             {
-                AddFiles(args,runParameters);
+                Console.WriteLine("Add new file to repository");
+                AddFiles(args);
             }
             else
             {
-                runParameters.Cs.ToList().ForEach(e=>
-                    RunScriptMode(runParameters.Dir,e,runParameters.MaxVersion)
-                    );
+                new UpdateDataabase(runParameters).Execute();
             }
 
 

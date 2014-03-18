@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultDatabaseVersionTest.cs" />
+    <Compile Include="ScriptVersionTests.cs" />
     <Compile Include="ZipMultipleFileService.cs" />
     <Compile Include="UpdateManagerTest.cs" />
     <Compile Include="ScriptBaseTest.cs" />

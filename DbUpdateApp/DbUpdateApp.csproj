@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppStartParameters.cs" />
     <Compile Include="FileService\ZipMultipleFileService.cs" />
     <Compile Include="FileService\MultipleFileService.cs" />
     <Compile Include="DefaultImpl\DefaultDatabaseVersion.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="DefaultImpl\ScriptVersion.cs" />
     <Compile Include="Interfaces\ScriptFileException.cs" />
     <Compile Include="DefaultImpl\DatabaseScriptManager.cs" />
+    <Compile Include="UpdateDataabase.cs" />
     <Compile Include="UpdateManager.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>

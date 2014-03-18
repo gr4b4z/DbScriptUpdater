@@ -1,18 +1,26 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DbUpdateApp
 {
-    public class ScriptVersion:IComparable
+    public class ScriptVersion : IComparable
     {
         public static int[] NewVersionNumber(int[] old)
         {
             var nv = new int[old.Length];
             Array.Copy(old, nv, old.Length);
-            nv[nv.Length - 1]++;
+            var lastNotZeroPosition = old.Length - 1;
+            bool stop = nv[lastNotZeroPosition] != 0;
+            while (lastNotZeroPosition > 0 && !stop)
+            {
+                stop = (nv[--lastNotZeroPosition] != 0);
+
+            }
+            nv[lastNotZeroPosition]++;
             return nv;
         }
-   public ScriptVersion(string file)
+        public ScriptVersion(string file)
         {
             this.Name = file;
             CreateVersion();
@@ -30,15 +38,15 @@ namespace DbUpdateApp
             }
         }
         public string Name { get; set; }
-        private readonly int[] _version= new int[4];
+        private readonly int[] _version = new int[4];
         public int[] Version { get { return _version; } }
 
         public int CompareTo(object obj)
         {
-            var v = (ScriptVersion) obj;
+            var v = (ScriptVersion)obj;
             int l = _version.Length;
             int results = 0;
-            int i=0;
+            int i = 0;
 
             do
             {
@@ -51,7 +59,7 @@ namespace DbUpdateApp
                     results = -1;
                 }
                 i++;
-            } while (i<l && results==0);
+            } while (i < l && results == 0);
 
             return results;
         }

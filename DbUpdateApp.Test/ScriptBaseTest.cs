@@ -48,18 +48,7 @@ namespace DbUpdateApp.Test
             };
         
         }
-        [Test]
-        public void Should_Return_Ordered_Files()
-        {
-
-            var files = Substitute.For<IFilesService>();
-            files.Files.Returns(_randomiezedFilesList);
-
-            var script = new ScriptService(files);
-            var names = script.GetOrderedFiles().Select(r => r.Name).ToList();
-            for (int v = _filesList.Count() - 1; v >= 0; v--)
-                Assert.AreSame(_filesList[v], names[v]);
-        }
+      
         [Test]
         public void Can_read_content()
         {
