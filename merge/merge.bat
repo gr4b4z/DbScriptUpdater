@@ -1,1 +1,1 @@
-ILMerge.exe "..\DbUpdateApp\bin\Release\DbUpdateApp.exe" "..\DbUpdateApp\bin\Release\Simple.Data.dll" "..\DbUpdateApp\bin\Release\Simple.Data.Ado.dll" "..\DbUpdateApp\bin\Release\Simple.Data.SqlServer.dll"  /out:"..\DbUpdateApp\bin\Release\DbApp.exe"
+ILMerge.exe "..\DbUpdateApp\bin\Release\DbUpdateApp.exe" "..\DbUpdateApp\bin\Release\Simple.Data.dll" "..\DbUpdateApp\bin\Release\Simple.Data.Ado.dll" "..\DbUpdateApp\bin\Release\Simple.Data.SqlServer.dll" "..\DbUpdateApp\bin\Release\Ionic.Zip.dll" /out:"..\DbUpdateApp\bin\Release\database.exe"

@@ -26,7 +26,7 @@ namespace DbUpdateApp
             var startFrom = _dbDatabaseVersion.GetVersion();
             Console.WriteLine("Database is in version: "+startFrom);
             var s = new ScriptVersion(startFrom);
-            var files = _iscriptService.GetOrderedFiles().Where(e => e.CompareTo(s) >= 0);
+            var files = _iscriptService.GetOrderedFiles().Where(e => e.CompareTo(s) > 0);
             if (endOn != null) files = files.Where(r => r.CompareTo(endOn) <= 0);
             try
             {

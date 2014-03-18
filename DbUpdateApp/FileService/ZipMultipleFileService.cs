@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DbUpdateApp.Interfaces;
@@ -39,6 +40,9 @@ namespace DbUpdateApp.FileService
         private IDictionary<string, string> ReadFiles()
         {
             Dictionary<string, string> files;
+            if (!File.Exists(_zipFileLocation))
+                 throw new FileNotFoundException(_zipFileLocation);
+
             using (ZipFile zip = ZipFile.Read(_zipFileLocation))
             {
                 files = zip.EntryFileNames
