@@ -73,9 +73,21 @@ When app look for files, it search all folders also.
 
 ## Run
 
+###Autonumeration
+	You can drag, and drop sql files on DbUpdater.exe to add files to folder specied in app.config path.
+	This file will be prexied with the next number. So if you have 1.2.file.sql, next number is 1.3.new_file.sql
+	
+	You can also add new files runing this:
+	DbUpdater.exe  "file1.sql" "file3.sql" "file3.sql"
+
+
 ### Run with parameters
-	DbUpdater.exe -cs "some connection string" -path "path-to-files" 
-	DbUpdater.exe -cs "some connection string" -path "path-to-files" -max "xx.update to this version only.sql"
+	DbUpdater.exe -cs "some connection string" -path "C:\path-to-files\" 
+	DbUpdater.exe -cs "some connection string" -path "C:\path-to-zipped-files.zip" 
+	DbUpdater.exe -cs "some connection string" -path "C:\path-to-files\"  -max "xx.update to this version only.sql"
+### Multiple databases	
+	DbUpdater.exe -cs "db1 connection string" "db2 connection string" "db3 connection string" -path "C:\path-to-files\" 
+	
 ### Run whitout parameters
 When running without parameters, app take configuration form app.config.
 
